@@ -13,8 +13,6 @@
 # then be able to easily download new themes for use.
 #
 
-currentuser=$(who | awk {'print $1'})
-
 function depends_amthemes() {
     if isPlatform "x11"; then
         getDepends feh
@@ -33,14 +31,14 @@ function install_theme_amthemes() {
         theme="default"
         repo="default"
     fi
-    mkdir -p "/home/$currentuser/.attract/layouts"
-    git clone "https://github.com/$repo/am-theme-$theme.git" "/home/$currentuser/.attract/layouts/$theme"
+    mkdir -p "/home/pi/.attract/layouts"
+    git clone "https://github.com/$repo/am-theme-$theme.git" "/home/pi/.attract/layouts/$theme"
 }
 
 function uninstall_theme_amthemes() {
     local theme="$1"
-    if [[ -d "/home/$currentuser/.attract/layouts/$theme" ]]; then
-        rm -rf "/home/$currentuser/.attract/layouts/$theme"
+    if [[ -d "/home/pi/.attract/layouts/$theme" ]]; then
+        rm -rf "/home/pi/.attract/layouts/$theme"
     fi
 }
 
@@ -152,7 +150,7 @@ function gui_amthemes() {
             theme=($theme)
             repo="${theme[0]}"
             theme="${theme[1]}"
-            if [[ -d "/home/$currentuser/.attract/layouts/$theme" ]]; then
+            if [[ -d "/home/pi/.attract/layouts/$theme" ]]; then
                 status+=("i")
                 options+=("$i" "Update or Uninstall $theme (installed)")
                 installed_themes+=("$theme $repo")
@@ -168,7 +166,7 @@ function gui_amthemes() {
         [[ -z "$choice" ]] && break
         case "$choice" in
             U)  #update install script to get new theme listings
-                cd "/home/$currentuser/RetroPie/attractmodemenu" 
+                cd "/home/pi/RetroPie/attractmodemenu" 
                 mv "amthemes.sh" "amthemes.sh.bkp" 
                 wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/amthemes.sh" 
                 chmod 777 "amthemes.sh" 
