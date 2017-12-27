@@ -31,6 +31,7 @@ function install_theme_amthemes() {
         theme="default"
         repo="default"
     fi
+    rm -rf "/home/$currentuser/.attract/layouts/$theme"
     mkdir -p "/home/pi/.attract/layouts"
     git clone "https://github.com/$repo/am-theme-$theme.git" "/home/pi/.attract/layouts/$theme"
 }
