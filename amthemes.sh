@@ -134,6 +134,7 @@ function gui_amthemes() {
         'dmmarti cosmo-mainmenu'
         'dmmarti cosmo-nds'
         'dmmarti cosmo-systems'
+        'RetroHursty69 back2basics'
         'RetroHursty69 comiccrazy'
         'RetroHursty69 comiccrazy_menu'
         'RetroHursty69 unifiedsnazzy'
