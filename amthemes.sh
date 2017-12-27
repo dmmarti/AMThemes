@@ -185,7 +185,8 @@ function gui_amthemes() {
                 theme=(${themes[choice-1]})
                 repo="${theme[0]}"
                 theme="${theme[1]}"
-                if [[ "${status[choice]}" == "i" ]]; then
+#                if [[ "${status[choice]}" == "i" ]]; then
+                if [[ -d "/home/pi/.attract/layouts/$theme" ]]; then
                     options=(1 "Update $theme" 2 "Uninstall $theme")
                     cmd=(dialog --backtitle "$__backtitle" --menu "Choose an option for theme" 12 40 06)
                     local choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
