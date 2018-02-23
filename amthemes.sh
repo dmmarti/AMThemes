@@ -92,7 +92,9 @@ else
     do
     if [[ $line == "display"* && $line != "displays_menu"* ]]; then
       echo $line >> /tmp/temp.cfg
-    elif [[ $line == *"layout"* ]]; then
+    elif [[ $line == *"menu_layout"*"${currenttheme}" ]]; then
+      echo -e "\tmenu_layout               ${newtheme}" >> /tmp/temp.cfg
+    elif [[ $line == *"layout"*"${currenttheme}" && $line != "menu_layout"* ]]; then
       echo -e "\tlayout               ${newtheme}" >> /tmp/temp.cfg
     elif [[ $line == "rule"* ]]; then
       echo -e "\t\t${line}" >> /tmp/temp.cfg
@@ -137,6 +139,8 @@ function gui_amthemes() {
         'dmmarti cosmo-systems'
         'dmmarti grid_menu'
         'dmmarti grid_systems'
+        'dmmarti silky_menu'
+        'dmmarti silky_systems'
         'dmmarti back2basics'
         'RetroHursty69 comiccrazy'
         'RetroHursty69 comiccrazy_menu'
