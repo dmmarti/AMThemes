@@ -66,7 +66,7 @@ CURTHEME=$(dialog --title "Attract Mode Theme Change Utility" --menu "Currently 
 clear
 
 if [ -z $CURTHEME ]; then
-   exit
+   return
 else
   clear
   let i=0 # define counting variable
@@ -79,7 +79,7 @@ else
   NEWTHEME=$(dialog --title "Attract Mode Theme Change Utility" --menu "Chose the replacement theme for ${currenttheme}." 24 80 17 "${W[@]}" 3>&2 2>&1 1>&3)
 
   if [ -z $NEWTHEME ]; then
-    exit
+    return
   else
     newtheme=`sed -n ${NEWTHEME}p /tmp/layouts`
     #echo "Going to replace ${currenttheme} with ${newtheme}"
