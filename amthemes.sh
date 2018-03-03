@@ -53,6 +53,13 @@ function changetheme() {
 cat /home/pi/.attract/attract.cfg |grep layout |grep -v "menu_" |grep -v param |sort -u |awk '{print $2}' > /tmp/current
 ls /home/pi/.attract/layouts > /tmp/layouts
 ls /opt/retropie/supplementary/attractmode/share/attract/layouts >> /tmp/layouts
+echo "Attrac-Man" >> /tmp/layouts
+echo "Basic" >> /tmp/layouts
+echo "Cools" >> /tmp/layouts
+echo "Orbit" >> /tmp/layouts
+echo "Reflect" >> /tmp/layouts
+echo "Verticools" >> /tmp/layouts
+
 
 let i=0 # define counting variable
 W=() # define working array
