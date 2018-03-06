@@ -58,6 +58,9 @@ Anyone wishing to have their Attract Mode theme included needs to follow these g
     am-theme-xxxxx     where xxxxx is the theme name
     do not include any spaces or special characters
     - and _ are valid
+    to make display assignmnents easier for end users
+    try to name any theme used for the main display or nested category displays with "main" or "menu" in the name
+    try to name any theme used for the individual system displays with "system" or "systems" in the name
 3.  submit a request for inclusion
     a.  make contact via Github
     b.  make contact via Youtube/Facebook/Forums
