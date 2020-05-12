@@ -156,76 +156,58 @@ function gui_amthemes() {
 
 function view_styles() {
 
-  if [[ -f "unified_theme.png" ]]; then
-
     local choice
 
     while true; do
         choice=$(dialog --backtitle "Attract Mode Themes" --title " View Samples " \
             --ok-label OK --cancel-label Exit \
             --menu "Chose an option to see the theme sample (10 second timeout)" 25 75 20 \
-            1 "Unified theme" \
-            2 "80s theme" \
-            3 "Arcade1Up 5:4 theme" \
-            4 "ArcadeOPS theme" \
-            5 "Arcade Refried theme" \
-            6 "Beyond Basics theme" \
-            7 "BigCade theme" \
-            8 "Comic Crazy Too theme" \
-            9 "Cosmic Rise theme" \
-            10 "Graffiti theme" \
-            11 "HurstyBlue theme" \
-            12 "HyperFlash theme" \
-            13 "Hyper theme" \
-            14 "MVSOPS theme" \
-            15 "Neon theme" \
-            16 "Silky theme" \
-            17 "Smooth theme" \
-            18 "Space Deck theme" \
-            19 "Stirling theme" \
-            2>&1 > /dev/tty)
-
-        case "$choice" in
-            1) show_theme unified_theme  ;;
-            2) show_theme 80s_theme  ;;
-            3) show_theme arcade1up_theme  ;;
-            4) show_theme arcadeops_theme  ;;
-            5) show_theme arcaderefried_theme  ;;
-            6) show_theme beyondbasics_theme  ;;
-            7) show_theme bigcade_theme  ;;
-            8) show_theme comiccrazytoo_theme  ;;
-            9) show_theme cosmicrise_theme  ;;
-            10) show_theme graffiti_theme  ;;
-            11) show_theme hurstyblue_theme  ;;
-            12) show_theme hyperflash_theme  ;;
-            13) show_theme hyper_theme  ;;
-            14) show_theme mvsops_theme  ;;
-            15) show_theme neon_theme  ;;
-            16) show_theme silky_theme  ;;
-            17) show_theme smooth_theme  ;;
-            18) show_theme spacedeck_theme  ;;
-            19) show_theme stirling_theme  ;;
-            *)  break ;;
-        esac
-    done
-
-  else
-
-    local choice
-
-    while true; do
-        choice=$(dialog --backtitle "Attract Mode Themes" --title " View Samples " \
-            --ok-label OK --cancel-label Exit \
-            --menu "Download theme samples " 25 75 20 \
-            1 "Download theme samples" \
+            1 "Download/update theme sample images" \
+            2 "Unified theme" \
+            3 "80s theme" \
+            4 "Arcade1Up 5:4 theme" \
+            5 "ArcadeOPS theme" \
+            6 "Arcade Refried theme" \
+            7 "Beyond Basics theme" \
+            8 "BigCade theme" \
+            9 "Comic Crazy Too theme" \
+            10 "Cosmic Rise theme" \
+            11 "Graffiti theme" \
+            12 "HurstyBlue theme" \
+            13 "HyperFlash theme" \
+            14 "Hyper theme" \
+            15 "MVSOPS theme" \
+            16 "Neon theme" \
+            17 "Silky theme" \
+            18 "Smooth theme" \
+            19 "Space Deck theme" \
+            20 "Stirling theme" \
             2>&1 > /dev/tty)
 
         case "$choice" in
             1) download_themesamples  ;;
+            2) show_theme unified_theme  ;;
+            3) show_theme 80s_theme  ;;
+            4) show_theme arcade1up_theme  ;;
+            5) show_theme arcadeops_theme  ;;
+            6) show_theme arcaderefried_theme  ;;
+            7) show_theme beyondbasics_theme  ;;
+            8) show_theme bigcade_theme  ;;
+            9) show_theme comiccrazytoo_theme  ;;
+            10) show_theme cosmicrise_theme  ;;
+            11) show_theme graffiti_theme  ;;
+            12) show_theme hurstyblue_theme  ;;
+            13) show_theme hyperflash_theme  ;;
+            14) show_theme hyper_theme  ;;
+            15) show_theme mvsops_theme  ;;
+            16) show_theme neon_theme  ;;
+            17) show_theme silky_theme  ;;
+            18) show_theme smooth_theme  ;;
+            19) show_theme spacedeck_theme  ;;
+            20) show_theme stirling_theme  ;;
             *)  break ;;
         esac
     done
-  fi
 }
 
 function show_theme() {
@@ -234,6 +216,25 @@ fbi --timeout 10 --once "$themesample.png"
 }
 
 function download_themesamples() {
+rm 80s_theme.png
+rm arcade1up_theme.png
+rm arcadeops_theme.png
+rm arcaderefried_theme.png
+rm beyondbasics_theme.png
+rm bigcade_theme.png
+rm comiccrazytoo_theme.png
+rm cosmicrise_theme.png
+rm graffiti_theme.png
+rm hurstyblue_theme.png
+rm hyperflash_theme.png
+rm hyper_theme.png
+rm mvsops_theme.png
+rm neon_theme.png
+rm silky_theme.png
+rm smooth_theme.png
+rm spacedeck_theme.png
+rm stirling_theme.png
+rm unified_theme.png
 wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/80s_theme.png"
 wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/arcade1up_theme.png"
 wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/arcadeops_theme.png"
