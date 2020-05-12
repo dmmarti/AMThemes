@@ -15,7 +15,7 @@
 
 # Welcome
  dialog --backtitle "Attract Mode" --title "Attract Mode Themes Downloader Menu" \
-    --yesno "\nAttract Mode Themes Downloader Menu.\n\nThis utility will provide an easy way to download and update Attract Mode themes (layouts).\n\nSome themes have two different variants.\n\nthemename_menu = used for Main Menu Display and nested displays (Arcades, Consoles, etc)\n\nthemename_systems = used for individual system displays (Atari 2600, Atari 7800, etc)\n\nYou can easily change a displays theme by pressing\n\nTAB > Displays > displayname > Layout\n\nThen cycle through the available layouts to use.\n\n\nDo you want to proceed?" \
+    --yesno "\nAttract Mode Themes Downloader Menu.\n\nThis utility will provide an easy way to download and update Attract Mode themes (layouts).\n\nSome themes have two different variants.\n\nthemename_menu = used for Main Menu Display and nested displays (Arcades, Consoles, etc)\n\nthemename_systems = used for individual system displays (Atari 2600, Atari 7800, etc)\n\nYou can easily change a displays theme by pressing\n\nTAB > Displays > displayname > Layout\n\nThen cycle through the available layouts to use.\n\nDo you want to proceed?" \
     25 100 2>&1 > /dev/tty \
     || exit
 
@@ -123,6 +123,7 @@ function gui_amthemes() {
                 mv "amthemes.sh" "amthemes.sh.bkp" 
                 wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/amthemes.sh" 
                 chmod 777 "amthemes.sh" 
+                download_themesamples
                 exit
                 ;;
             V)  #view theme samples
