@@ -252,7 +252,7 @@ wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/silky_theme.png"
 wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/smooth_theme.png"
 wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/spacedeck_theme.png"
 wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/stirling_theme.png"
-wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/unifiedtheme.png"
+wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/unified_theme.png"
 }
 
 
