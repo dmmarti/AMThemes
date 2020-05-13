@@ -96,7 +96,7 @@ function gui_amthemes() {
         local default
 
         options+=(U "Update install script - script will exit when updated")
-        options+=(V "View theme samples")
+        options+=(V "View or update theme gallery")
 
         local i=1
         for theme in "${themes[@]}"; do
@@ -159,10 +159,10 @@ function view_styles() {
     local choice
 
     while true; do
-        choice=$(dialog --backtitle "Attract Mode Themes" --title " View Samples " \
+        choice=$(dialog --backtitle "Attract Mode Themes" --title " View Theme Gallery " \
             --ok-label OK --cancel-label Exit \
-            --menu "Chose an option to see the theme sample (10 second timeout)" 25 75 20 \
-            1 "Download/update theme sample images" \
+            --menu "Chose an option to see the theme gallery (10 second timeout)" 25 75 20 \
+            1 "Download or update theme gallery images" \
             2 "Unified theme" \
             3 "80s theme" \
             4 "Arcade1Up 5:4 theme" \
@@ -212,7 +212,7 @@ function view_styles() {
 
 function show_theme() {
 local themesample="$1"
-fbi --timeout 10 --once "$themesample.png"
+fbi --timeout 10 --once --autozoom "$themesample.png"
 }
 
 function download_themesamples() {
