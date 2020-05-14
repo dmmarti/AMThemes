@@ -212,7 +212,7 @@ function view_styles() {
 
 function show_theme() {
 local themesample="$1"
-sudo fbi -T 2 --timeout 10 --once --autozoom "/home/pi/RetroPie/attractmodemenu/$themesample.png"
+ fbi --timeout 10 --once --autozoom "/home/pi/RetroPie/attractmodemenu/$themesample.png"
 }
 
 function download_themesamples() {
