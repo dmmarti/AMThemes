@@ -15,7 +15,7 @@
 
 # Welcome
  dialog --backtitle "Attract Mode" --title "Attract Mode Themes Downloader Menu" \
-    --yesno "\nAttract Mode Themes Downloader Menu.\n\nThis utility will provide an easy way to download and update Attract Mode themes (layouts).\n\nSome themes have two different variants.\n\nthemename_menu = used for Main Menu Display and nested displays (Arcades, Consoles, etc)\n\nthemename_systems = used for individual system displays (Atari 2600, Atari 7800, etc)\n\nYou can easily change a displays theme by pressing\n\nTAB > Displays > displayname > Layout\n\nThen cycle through the available layouts to use.\n\nDo you want to proceed?" \
+    --yesno "\nAttract Mode Themes Downloader Menu.\n\nThis utility will provide an easy way to download and update Attract Mode themes (layouts).\n\nSome themes have two different variants.\n\nthemename_menu = used for Main Menu Display and nested displays (Arcades, Consoles, etc)\n\nthemename_systems = used for individual system displays (Atari 2600, Atari 7800, etc)\n\n---------------------------------------\n\nYou can easily change a displays theme by pressing\n\nTAB > Displays > displayname > Layout\n\nThen cycle through the available layouts to use.\n\nYou can also change themes using this utility (option C).\n\n\nDo you want to proceed?" \
     25 100 2>&1 > /dev/tty \
     || exit
 
@@ -95,6 +95,7 @@ function gui_amthemes() {
         local status=()
         local default
 
+        options+=(C "Change theme - change currently used theme to another one")
         options+=(U "Update install script - script will exit when updated")
         options+=(V "View or update theme gallery")
 
@@ -118,6 +119,9 @@ function gui_amthemes() {
         default="$choice"
         [[ -z "$choice" ]] && break
         case "$choice" in
+            C)  #change to new theme
+                changetheme
+                ;;
             U)  #update install script to get new theme listings
                 cd "/home/pi/RetroPie/attractmodemenu" 
                 mv "amthemes.sh" "amthemes.sh.bkp" 
@@ -212,7 +216,7 @@ function view_styles() {
 
 function show_theme() {
 local themesample="$1"
- fbi --timeout 10 --once --autozoom "/home/pi/RetroPie/attractmodemenu/$themesample.png"
+sudo fbi -T 2 --timeout 10 --once --autozoom "/home/pi/RetroPie/attractmodemenu/$themesample.png"
 }
 
 function download_themesamples() {
@@ -254,6 +258,90 @@ wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/smooth_theme.png
 wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/spacedeck_theme.png"
 wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/stirling_theme.png"
 wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/unified_theme.png"
+}
+
+function changetheme() {
+# Welcome
+ dialog --backtitle "Attract Mode" --title "Attract Mode Theme Change Utility Menu" \
+    --yesno "\nAttract Mode Theme Change Utility menu.\n\nThis utility will provide a quick way to change the layout(theme) for displays within Attract Mode.\n\nAfter making the chagnesu will need to restart in order for the changes to take affect.\n\nDo you want to proceed?" \
+    20 80 2>&1 > /dev/tty \
+    || exit
+
+cat /home/pi/.attract/attract.cfg |grep layout |grep -v "menu_" |grep -v "toggle_layout" |grep -v param |sort -u |awk '{print $2}' > /tmp/current
+ls /home/pi/.attract/layouts > /tmp/layouts
+ls /usr/local/share/attract/layouts >> /tmp/layouts
+
+let i=0 # define counting variable
+W=() # define working array
+while read -r line; do # process file by file
+    let i=$i+1
+    W+=($i "$line")
+done < <(cat /tmp/current)
+
+CURTHEME=$(dialog --title "Attract Mode Theme Change Utility" --menu "Currently used layouts - choose the one to change." 24 80 17 "${W[@]}" 3>&2 2>&1 1>&3)
+
+clear
+
+if [ -z $CURTHEME ]; then
+   return
+else
+  clear
+  let i=0 # define counting variable
+  W=() # define working array
+  while read -r line; do # process file by file
+      let i=$i+1
+      W+=($i "$line")
+  done < <(cat /tmp/layouts)
+  currenttheme=`sed -n ${CURTHEME}p /tmp/current`
+  NEWTHEME=$(dialog --title "Attract Mode Theme Change Utility" --menu "Chose the replacement theme for ${currenttheme}." 24 80 17 "${W[@]}" 3>&2 2>&1 1>&3)
+
+  if [ -z $NEWTHEME ]; then
+    return
+  else
+    newtheme=`sed -n ${NEWTHEME}p /tmp/layouts`
+    #echo "Going to replace ${currenttheme} with ${newtheme}"
+
+    cp /home/pi/.attract/attract.cfg /home/pi/.attract/attract.cfg.bkp
+    cp /home/pi/.attract/attract.cfg /tmp/temp_attract.cfg
+    rm /tmp/temp.cfg  2> /dev/null
+
+    while read line
+    do
+    if [[ $line == "display"* && $line != "displays_menu"* ]]; then
+      echo $line >> /tmp/temp.cfg
+    elif [[ $line == *"menu_layout"*"${currenttheme}" ]]; then
+      echo -e "\tmenu_layout               ${newtheme}" >> /tmp/temp.cfg
+    elif [[ $line == *"layout"*"${currenttheme}" && $line != "menu_layout"* ]]; then
+      echo -e "\tlayout               ${newtheme}" >> /tmp/temp.cfg
+    elif [[ $line == "rule"* ]]; then
+      echo -e "\t\t${line}" >> /tmp/temp.cfg
+    elif [[ $line == "sound" ]]; then
+      echo $line >> /tmp/temp.cfg
+    elif [[ $line == "input_map" ]]; then
+      echo $line >> /tmp/temp.cfg
+    elif [[ $line == "general" ]]; then
+      echo $line >> /tmp/temp.cfg
+    elif [[ $line == "saver_config" ]]; then
+      echo $line >> /tmp/temp.cfg
+    elif [[ $line == "layout_config"* ]]; then
+      echo $line >> /tmp/temp.cfg
+    elif [[ $line == "intro_config" ]]; then
+      echo $line >> /tmp/temp.cfg
+    elif [[ $line == "#"* ]]; then
+      echo $line >> /tmp/temp.cfg
+    else
+      echo -e "\t${line}" >> /tmp/temp.cfg
+    fi
+    done < /tmp/temp_attract.cfg
+  fi
+  
+  rm /tmp/temp_attract.cfg
+  mv /tmp/temp.cfg /home/pi/.attract/attract.cfg
+
+fi
+
+#rm /tmp/current
+#rm /tmp/layouts
 }
 
 
