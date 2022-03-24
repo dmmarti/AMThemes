@@ -13,19 +13,53 @@
 # then be able to easily download new themes for use.
 #
 
+# default attract dir for rpi. change it for custom setups
+attract_conf_dir="/home/pi/.attract"
+
+
+function check_standalone() {
+    # if we don't find rpi function we asume standalone
+    declare -f -F get_retropie_depends > /dev/null
+    if [ "$?" != "0" ]; then
+	# if directory exist we just use the one defined
+	if [ ! -e "$attract_conf_dir" ]; then
+	    # try to guess conf dir from current home user
+	    if [ -e "${HOME}/.attract/attract.cfg" ]; then
+		attract_conf_dir="${HOME}/.attract"
+	    else
+		# we ask the user
+		attract_conf_dir="$(dialog --title "Attract Mode - Configuration Directory" --inputbox "Enter the full path to Attract Configuraton directory:" 10 100 2>&1 > /dev/tty)"
+		# echo "Can't find Attract Mode configuration directory."
+		# echo -n "Please introduce correct directory: "
+		# read attract_conf_dir
+	    fi
+	fi
+    fi
+    # last confirmation
+    if [ ! -e "${attract_conf_dir}/attract.cfg" ]; then
+	echo "ERROR: Can't find Attract Mode configuration directory [$attract_conf_dir]"
+	exit 1
+    fi
+}
+check_standalone
+
 # Welcome
  dialog --backtitle "Attract Mode" --title "Attract Mode Themes Downloader Menu" \
-    --yesno "\nAttract Mode Themes Downloader Menu.\n\nThis utility will provide an easy way to download and update Attract Mode themes (layouts).\n\nSome themes have two different variants.\n\nthemename_menu = used for Main Menu Display and nested displays (Arcades, Consoles, etc)\n\nthemename_systems = used for individual system displays (Atari 2600, Atari 7800, etc)\n\n---------------------------------------\n\nYou can easily change a displays theme by pressing\n\nTAB > Displays > displayname > Layout\n\nThen cycle through the available layouts to use.\n\nYou can also change themes using this utility (option C).\n\n\nDo you want to proceed?" \
+    --yesno "\nThis utility will provide an easy way to download and update Attract Mode themes (layouts).\n\nSome themes have two different variants.\n\nthemename_menu = used for Main Menu Display and nested displays (Arcades, Consoles, etc)\nthemename_systems = used for individual system displays (Atari 2600, Atari 7800, etc)\n\n---------------------------------------\n\nYou can easily change a displays theme by pressing\n\nTAB > Displays > displayname > Layout\n\nThen cycle through the available layouts to use.\n\nYou can also change themes using this utility (option C).\n\n\nDo you want to proceed?" \
     25 100 2>&1 > /dev/tty \
     || exit
 
-function depends_amthemes() {
-    if isPlatform "x11"; then
-        getDepends feh
-    else
-        getDepends fbi
-    fi
-}
+# where is this script
+amthemes_self="$0"
+
+## not used upstream?
+#function depends_amthemes() {
+#    if isPlatform "x11"; then
+#        getDepends feh
+#    else
+#        getDepends fbi
+#    fi
+#}
 
 function install_theme_amthemes() {
     local theme="$1"
@@ -37,15 +71,16 @@ function install_theme_amthemes() {
         theme="default"
         repo="default"
     fi
-    rm -rf "/home/pi/.attract/layouts/$theme"
-    mkdir -p "/home/pi/.attract/layouts"
-    git clone "https://github.com/$repo/am-theme-$theme.git" "/home/pi/.attract/layouts/$theme"
+    rm -rf "${attract_conf_dir}/.attract/layouts/$theme"
+    mkdir -p "${attract_conf_dir}/.attract/layouts"
+    git clone "https://github.com/$repo/am-theme-$theme.git" "${attract_conf_dir}/.attract/layouts/$theme"
+    # echo "DEBUGINSTALL" ; read a
 }
 
 function uninstall_theme_amthemes() {
     local theme="$1"
-    if [[ -d "/home/pi/.attract/layouts/$theme" ]]; then
-        rm -rf "/home/pi/.attract/layouts/$theme"
+    if [[ -d "${attract_conf_dir}/.attract/layouts/$theme" ]]; then
+        rm -rf "${attract_conf_dir}/.attract/layouts/$theme"
     fi
 }
 
@@ -104,7 +139,7 @@ function gui_amthemes() {
             theme=($theme)
             repo="${theme[0]}"
             theme="${theme[1]}"
-            if [[ -d "/home/pi/.attract/layouts/$theme" ]]; then
+            if [[ -d "${attract_conf_dir}/.attract/layouts/$theme" ]]; then
                 status+=("i")
                 options+=("$i" "Update or Uninstall $theme (installed)")
                 installed_themes+=("$theme $repo")
@@ -123,10 +158,15 @@ function gui_amthemes() {
                 changetheme
                 ;;
             U)  #update install script to get new theme listings
-                cd "/home/pi/RetroPie/attractmodemenu" 
-                mv "amthemes.sh" "amthemes.sh.bkp" 
-                wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/amthemes.sh" 
-                chmod 777 "amthemes.sh" 
+		# if we are RetroPie let's do it there
+		if [ -e "/home/pi/RetroPie/attractmodemenu" ]; then
+            	    cd "/home/pi/RetroPie/attractmodemenu"
+		fi
+                mv "$amthemes_self" "amthemes.sh.bkp"
+                wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/amthemes.sh"
+                chmod 777 "amthemes.sh"
+		# PENDING: where should samples go if we are in standalone mode?
+		# cd "???"
                 download_themesamples
                 exit
                 ;;
@@ -138,7 +178,7 @@ function gui_amthemes() {
                 repo="${theme[0]}"
                 theme="${theme[1]}"
 #                if [[ "${status[choice]}" == "i" ]]; then
-                if [[ -d "/home/pi/.attract/layouts/$theme" ]]; then
+                if [[ -d "${attract_conf_dir}/.attract/layouts/$theme" ]]; then
                     options=(1 "Update $theme" 2 "Uninstall $theme")
                     cmd=(dialog --backtitle "$__backtitle" --menu "Choose an option for theme" 12 40 06)
                     local choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
@@ -165,7 +205,7 @@ function view_styles() {
     while true; do
         choice=$(dialog --backtitle "Attract Mode Themes" --title " View Theme Gallery " \
             --ok-label OK --cancel-label Exit \
-            --menu "Chose an option to see the theme gallery (10 second timeout)" 25 75 20 \
+            --menu "Chose an option to see the theme gallery (10 second timeout or close image)" 25 75 20 \
             1 "Download or update theme gallery images" \
             2 "Unified theme" \
             3 "80s theme" \
@@ -216,7 +256,11 @@ function view_styles() {
 
 function show_theme() {
 local themesample="$1"
-sudo fbi -T 2 --timeout 10 --once --autozoom "/home/pi/RetroPie/attractmodemenu/$themesample.png"
+# download to temporal file
+sample_temp="/tmp/${themesample}.png"
+wget "https://raw.githubusercontent.com/dmmarti/AMThemes/master/${themesample}.png" -O "$sample_temp"
+# keep trying until one works (first x11 ones, then framebuffer)
+feh --on-last-slide=quit -D 10 -F -Z "$sample_temp" || display -delay 700 -loop 1 "$sample_temp" || fbi -T 2 --timeout 10 --once --autozoom "$sample_temp"
 }
 
 function download_themesamples() {
@@ -267,9 +311,9 @@ function changetheme() {
     20 80 2>&1 > /dev/tty \
     || exit
 
-cat /home/pi/.attract/attract.cfg |grep layout |grep -v "menu_" |grep -v "toggle_layout" |grep -v param |sort -u |awk '{print $2}' > /tmp/current
-ls /home/pi/.attract/layouts > /tmp/layouts
-ls /usr/local/share/attract/layouts >> /tmp/layouts
+cat "${attract_conf_dir}/.attract/attract.cfg" |grep layout |grep -v "menu_" |grep -v "toggle_layout" |grep -v param |sort -u |awk '{print $2}' > /tmp/current
+ls "${attract_conf_dir}/.attract/layouts" > /tmp/layouts
+ls "/usr/local/share/attract/layouts" >> /tmp/layouts
 
 let i=0 # define counting variable
 W=() # define working array
@@ -301,8 +345,8 @@ else
     newtheme=`sed -n ${NEWTHEME}p /tmp/layouts`
     #echo "Going to replace ${currenttheme} with ${newtheme}"
 
-    cp /home/pi/.attract/attract.cfg /home/pi/.attract/attract.cfg.bkp
-    cp /home/pi/.attract/attract.cfg /tmp/temp_attract.cfg
+    cp "${attract_conf_dir}/.attract/attract.cfg" "${attract_conf_dir}/.attract/attract.cfg.bkp"
+    cp "${attract_conf_dir}/.attract/attract.cfg" "/tmp/temp_attract.cfg"
     rm /tmp/temp.cfg  2> /dev/null
 
     while read line
@@ -334,9 +378,9 @@ else
     fi
     done < /tmp/temp_attract.cfg
   fi
-  
+
   rm /tmp/temp_attract.cfg
-  mv /tmp/temp.cfg /home/pi/.attract/attract.cfg
+  mv /tmp/temp.cfg "${attract_conf_dir}/.attract/attract.cfg"
 
 fi
 
