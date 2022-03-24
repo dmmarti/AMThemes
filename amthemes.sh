@@ -28,7 +28,7 @@ function check_standalone() {
 		attract_conf_dir="${HOME}/.attract"
 	    else
 		# we ask the user
-		attract_conf_dir="$(dialog --title "Attract Mode - Configuration Directory" --inputbox "Enter the full path to Attract Configuraton directory:" 10 100 2>&1 > /dev/tty)"
+		attract_conf_dir="$(dialog --title "Attract Mode - Configuration Directory" --inputbox "Enter the full path to Attract Configuraton directory.\n\nEx: /home/mike/.attract\n" 10 100 2>&1 > /dev/tty)"
 		# echo "Can't find Attract Mode configuration directory."
 		# echo -n "Please introduce correct directory: "
 		# read attract_conf_dir
@@ -71,16 +71,16 @@ function install_theme_amthemes() {
         theme="default"
         repo="default"
     fi
-    rm -rf "${attract_conf_dir}/.attract/layouts/$theme"
-    mkdir -p "${attract_conf_dir}/.attract/layouts"
-    git clone "https://github.com/$repo/am-theme-$theme.git" "${attract_conf_dir}/.attract/layouts/$theme"
+    rm -rf "${attract_conf_dir}/layouts/$theme"
+    mkdir -p "${attract_conf_dir}/layouts"
+    git clone "https://github.com/$repo/am-theme-$theme.git" "${attract_conf_dir}/layouts/$theme"
     # echo "DEBUGINSTALL" ; read a
 }
 
 function uninstall_theme_amthemes() {
     local theme="$1"
-    if [[ -d "${attract_conf_dir}/.attract/layouts/$theme" ]]; then
-        rm -rf "${attract_conf_dir}/.attract/layouts/$theme"
+    if [[ -d "${attract_conf_dir}/layouts/$theme" ]]; then
+        rm -rf "${attract_conf_dir}/layouts/$theme"
     fi
 }
 
@@ -139,7 +139,7 @@ function gui_amthemes() {
             theme=($theme)
             repo="${theme[0]}"
             theme="${theme[1]}"
-            if [[ -d "${attract_conf_dir}/.attract/layouts/$theme" ]]; then
+            if [[ -d "${attract_conf_dir}/layouts/$theme" ]]; then
                 status+=("i")
                 options+=("$i" "Update or Uninstall $theme (installed)")
                 installed_themes+=("$theme $repo")
@@ -178,7 +178,7 @@ function gui_amthemes() {
                 repo="${theme[0]}"
                 theme="${theme[1]}"
 #                if [[ "${status[choice]}" == "i" ]]; then
-                if [[ -d "${attract_conf_dir}/.attract/layouts/$theme" ]]; then
+                if [[ -d "${attract_conf_dir}/layouts/$theme" ]]; then
                     options=(1 "Update $theme" 2 "Uninstall $theme")
                     cmd=(dialog --backtitle "$__backtitle" --menu "Choose an option for theme" 12 40 06)
                     local choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
@@ -311,8 +311,8 @@ function changetheme() {
     20 80 2>&1 > /dev/tty \
     || exit
 
-cat "${attract_conf_dir}/.attract/attract.cfg" |grep layout |grep -v "menu_" |grep -v "toggle_layout" |grep -v param |sort -u |awk '{print $2}' > /tmp/current
-ls "${attract_conf_dir}/.attract/layouts" > /tmp/layouts
+cat "${attract_conf_dir}/attract.cfg" |grep layout |grep -v "menu_" |grep -v "toggle_layout" |grep -v param |sort -u |awk '{print $2}' > /tmp/current
+ls "${attract_conf_dir}/layouts" > /tmp/layouts
 ls "/usr/local/share/attract/layouts" >> /tmp/layouts
 
 let i=0 # define counting variable
@@ -345,8 +345,8 @@ else
     newtheme=`sed -n ${NEWTHEME}p /tmp/layouts`
     #echo "Going to replace ${currenttheme} with ${newtheme}"
 
-    cp "${attract_conf_dir}/.attract/attract.cfg" "${attract_conf_dir}/.attract/attract.cfg.bkp"
-    cp "${attract_conf_dir}/.attract/attract.cfg" "/tmp/temp_attract.cfg"
+    cp "${attract_conf_dir}/attract.cfg" "${attract_conf_dir}/attract.cfg.bkp"
+    cp "${attract_conf_dir}/attract.cfg" "/tmp/temp_attract.cfg"
     rm /tmp/temp.cfg  2> /dev/null
 
     while read line
@@ -380,7 +380,7 @@ else
   fi
 
   rm /tmp/temp_attract.cfg
-  mv /tmp/temp.cfg "${attract_conf_dir}/.attract/attract.cfg"
+  mv /tmp/temp.cfg "${attract_conf_dir}/attract.cfg"
 
 fi
 
